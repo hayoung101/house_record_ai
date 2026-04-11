@@ -1,0 +1,33 @@
+# 의존성 (Dependencies)
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# 빌드 결과물 (Build Outputs)
+dist/
+build/
+out/
+
+# 맥 OS 쓰레기 (OS generated files)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 환경 변수 및 비밀번호 (Sensitive Info)
+.env
+.env.local
+.env.*.local
+
+# IDE 및 에디터 (Editor-specific)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 프로젝트 임시 파일 (Project-specific)
+review.txt
+# GEMINI.md  # 에이전트 로그라면 주석 해제해서 제외하세요
+#
+gstack/

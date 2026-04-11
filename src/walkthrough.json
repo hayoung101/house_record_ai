@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "rooms": [
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "steps": [
+        { "id": "walls", "label": "Walls & Ceiling", "guide": "Capture scuffs, holes, or water stains." },
+        { "id": "floor", "label": "Flooring & Carpet", "guide": "Focus on stains or loose tiles." },
+        { "id": "windows", "label": "Windows & Blinds", "guide": "Check for cracks or broken slats." }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "steps": [
+        { "id": "appliances", "label": "Appliances", "guide": "Open oven and fridge. Capture any grime or damage." },
+        { "id": "cabinets", "label": "Cabinets & Counters", "guide": "Capture chips, scratches, or loose hinges." },
+        { "id": "sink", "label": "Sink & Plumping", "guide": "Capture drips or rust." }
+      ]
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "steps": [
+        { "id": "tiles", "label": "Tiles & Grout", "guide": "Capture mold or cracked tiles." },
+        { "id": "fixtures", "label": "Fixtures & Mirror", "guide": "Capture water spots or chips." },
+        { "id": "shower", "label": "Shower & Tub", "guide": "Check for drainage issues or stains." }
+      ]
+    }
+  ]
+}
