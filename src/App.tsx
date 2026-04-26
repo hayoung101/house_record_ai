@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Camera, LayoutGrid, FileText, Settings, ArrowLeft, CheckCircle2, ChevronRight, Image as ImageIcon, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Camera, LayoutGrid, FileText, Settings, ArrowLeft, CheckCircle2, ChevronRight, Image as ImageIcon, ShieldCheck, AlertTriangle, ScanLine } from 'lucide-react';
 import walkthroughData from './walkthrough.json';
 import { loadAppData, saveAppData, clearAppData, type PersistentData, type InspectionPhase } from './lib/storage';
 import { computeHash } from './lib/hash';
-import { submitMoveInReport, submitMoveOutReport, type MoveInResponse, type DiscrepancyResult } from './lib/api';
+import { submitMoveInReport, submitMoveOutReport, analyzeImage, type MoveInResponse, type DiscrepancyResult, type AnalysisData } from './lib/api';
+import ImageUpload from './components/ImageUpload';
+import AnalysisResult from './components/AnalysisResult';
 
-type AppState = 'hub' | 'wizard' | 'report' | 'settings' | 'processing';
+type AppState = 'hub' | 'wizard' | 'report' | 'settings' | 'processing' | 'analyze';
 
 export default function App() {
   const [view, setView] = useState<AppState>('hub');
@@ -16,6 +18,9 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [discrepancies, setDiscrepancies] = useState<DiscrepancyResult[]>([]);
+  const [analyzeResult, setAnalyzeResult] = useState<AnalysisData | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -245,6 +250,47 @@ export default function App() {
         </div>
       )}
 
+      {view === 'analyze' && (
+        <div className="analyze-view">
+          <div className="analyze-header">
+            <h1>하자 분석</h1>
+            <p>이미지를 업로드하면 AI가 하자를 자동으로 분석합니다.</p>
+          </div>
+          <div className="analyze-body">
+            <ImageUpload
+              disabled={isAnalyzing}
+              onImageSelect={async (file) => {
+                setAnalyzeResult(null);
+                setAnalyzeError(null);
+                setIsAnalyzing(true);
+                try {
+                  const result = await analyzeImage(file);
+                  setAnalyzeResult(result);
+                } catch (err) {
+                  setAnalyzeError(err instanceof Error ? err.message : '분석에 실패했습니다.');
+                } finally {
+                  setIsAnalyzing(false);
+                }
+              }}
+            />
+            {isAnalyzing && (
+              <div className="analyze-loading">
+                <div className="spinner" />
+                <p>AI 분석 중...</p>
+              </div>
+            )}
+            {analyzeError && (
+              <div className="analyze-error">
+                <p>{analyzeError}</p>
+              </div>
+            )}
+            {analyzeResult && !isAnalyzing && (
+              <AnalysisResult result={analyzeResult} />
+            )}
+          </div>
+        </div>
+      )}
+
       {view === 'processing' && (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
           <div className="spinner" />
@@ -319,6 +365,9 @@ export default function App() {
         <nav className="bottom-nav">
           <button className={`nav-item ${view === 'hub' ? 'active' : ''}`} onClick={() => setView('hub')}>
             <LayoutGrid size={26} />
+          </button>
+          <button className={`nav-item ${view === 'analyze' ? 'active' : ''}`} onClick={() => setView('analyze')}>
+            <ScanLine size={26} />
           </button>
           <button className={`nav-item ${view === 'report' ? 'active' : ''}`} onClick={() => setView('report')}>
             <FileText size={26} />

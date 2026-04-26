@@ -34,6 +34,10 @@ export default defineConfig({
 	clientPort: 443,
     },
     proxy: {
+      '/api/analyze': {
+        target: 'http://localhost:8788',
+        changeOrigin: true,
+      },
       '/api/ollama': {
         target: 'http://host.containers.internal:11434',
         changeOrigin: true,

@@ -1,3 +1,39 @@
+export interface DefectItem {
+  type: string;
+  location: string;
+  severity: '경미' | '보통' | '심각';
+}
+
+export interface AnalysisData {
+  defects: DefectItem[];
+  summary: string;
+}
+
+export async function analyzeImage(file: File): Promise<AnalysisData> {
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image: base64, mediaType: file.type }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(err.error ?? `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
 /**
  * Represents the result of a move-in report submission.
  */
